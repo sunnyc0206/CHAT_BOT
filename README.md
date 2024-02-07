@@ -1,0 +1,1 @@
+ChatBot-Dynamic-Forms is a JavaScript project leveraging Compromise.JS for natural language processing. This repository demonstrates how to create a dynamic form-based ChatBot, intelligently generating and processing forms based on user intents. Enhance user interactions with dynamic form fields, seamless natural language understanding, and streamlined backend integration.
