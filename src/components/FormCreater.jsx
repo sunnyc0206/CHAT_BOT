@@ -51,6 +51,10 @@ const FormCreator = () => {
       setFormFields(fields);
       setFormCreated(true);
       setChatMessages(prevMessages => [...prevMessages, { user: false, message: suggestions.createForm }]);
+    } else if (intent === 'addField') { // Check for 'addField' intent
+      const newField = extractNewField(parsedInput);
+      setFormFields(prevFields => [...prevFields, newField]); // Add new field
+      setChatMessages(prevMessages => [...prevMessages, { user: false, message: `Field "${newField}" added successfully.` }]);
     } else if (intent === 'greeting') {
       setChatMessages(prevMessages => [...prevMessages, { user: false, message: suggestions.greeting }]);
     } else {
@@ -58,16 +62,34 @@ const FormCreator = () => {
     }
     setCommand('');
   };
-
+  
   const determineIntent = (parsedInput) => {
     if (parsedInput.match('(create|make|generate) form with').found || parsedInput.match('(create|make|generate) a form with').found) {
       return 'createForm';
+    } else if (parsedInput.match('(add) field').found) { // Check for 'addField' intent
+      return 'addField';
     } else if (parsedInput.match('(hi|hello)').found) {
       return 'greeting';
     }
     return 'unknown';
   };
-
+  
+  const extractNewField = (parsedInput) => {
+    const inputText = parsedInput.text();
+    const fieldIndex = inputText.indexOf('field');
+    if (fieldIndex !== -1) {
+      const fieldsString = inputText.substring(fieldIndex + 5).trim(); // Add 5 to exclude 'field' and any leading space
+      // Split the string by spaces and commas
+      const fields = fieldsString.split(/[\s,]+/).map(field => field.trim());
+      // Filter out any empty strings
+      return fields.filter(field => field !== '');
+    }
+    return [];
+  };
+  
+  
+  
+  
   const extractFields = (parsedInput) => {
     const inputText = parsedInput.text();
     const withIndex = inputText.indexOf('with');
@@ -80,6 +102,7 @@ const FormCreator = () => {
     }
     return [];
   };
+
 
   const openModal = () => {
     setIsModalOpen(true);
