@@ -1,9 +1,9 @@
+// FormCreator.js
 import React, { useState, useRef } from 'react';
 import compromise from 'compromise';
-import suggestions from './suggestions'; // Importing suggestions from the suggestions.js file
-import './form.css'; 
+import suggestions from './suggestions';
+import './form.css';
 import DynamicForm from './DynamicForm';
-
 
 const FormCreator = () => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -42,23 +42,37 @@ const FormCreator = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const userMessage = command.trim();
-    const userMessageObj = { user: true, message: userMessage }; // Create user message object
-    setChatMessages(prevMessages => [...prevMessages, userMessageObj]); // Add user message to chatMessages
+    const userMessageObj = { user: true, message: userMessage };
+    setChatMessages((prevMessages) => [...prevMessages, userMessageObj]);
+
     const parsedInput = compromise(userMessage);
     const intent = determineIntent(parsedInput);
+
     if (intent === 'createForm') {
       const fields = extractFields(parsedInput);
       setFormFields(fields);
       setFormCreated(true);
-      setChatMessages(prevMessages => [...prevMessages, { user: false, message: suggestions.createForm }]);
-    } else if (intent === 'addField') { // Check for 'addField' intent
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { user: false, message: suggestions.createForm },
+      ]);
+    } else if (intent === 'addField') {
       const newField = extractNewField(parsedInput);
-      setFormFields(prevFields => [...prevFields, newField]); // Add new field
-      setChatMessages(prevMessages => [...prevMessages, { user: false, message: `Field "${newField}" added successfully.` }]);
+      setFormFields((prevFields) => [...prevFields, newField]);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { user: false, message: `Field added successfully.` },
+      ]);
     } else if (intent === 'greeting') {
-      setChatMessages(prevMessages => [...prevMessages, { user: false, message: suggestions.greeting }]);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { user: false, message: suggestions.greeting },
+      ]);
     } else {
-      setChatMessages(prevMessages => [...prevMessages, { user: false, message: suggestions.unknown }]);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { user: false, message: suggestions.unknown },
+      ]);
     }
     setCommand('');
   };
@@ -66,44 +80,48 @@ const FormCreator = () => {
   const determineIntent = (parsedInput) => {
     if (parsedInput.match('(create|make|generate) form with').found || parsedInput.match('(create|make|generate) a form with').found) {
       return 'createForm';
-    } else if (parsedInput.match('(add) field').found) { // Check for 'addField' intent
+    } else if (parsedInput.match('(add) field').found) {
       return 'addField';
     } else if (parsedInput.match('(hi|hello)').found) {
       return 'greeting';
     }
     return 'unknown';
   };
-  
-  const extractNewField = (parsedInput) => {
-    const inputText = parsedInput.text();
-    const fieldIndex = inputText.indexOf('field');
-    if (fieldIndex !== -1) {
-      const fieldsString = inputText.substring(fieldIndex + 5).trim(); // Add 5 to exclude 'field' and any leading space
-      // Split the string by spaces and commas
-      const fields = fieldsString.split(/[\s,]+/).map(field => field.trim());
-      // Filter out any empty strings
-      return fields.filter(field => field !== '');
-    }
-    return [];
-  };
-  
-  
-  
-  
+
   const extractFields = (parsedInput) => {
-    const inputText = parsedInput.text();
-    const withIndex = inputText.indexOf('with');
-    if (withIndex !== -1) {
-      const fieldsString = inputText.substring(withIndex + 4).trim(); // Add 4 to exclude 'with'
-      // Split the string by both commas and spaces
-      const fields = fieldsString.split(/[,\s]+/).map(field => field.trim());
-      // Filter out empty strings
-      return fields.filter(field => field !== '');
-    }
-    return [];
-  };
+  const inputText = parsedInput.text();
+  const withIndex = inputText.indexOf('with');
+  if (withIndex !== -1) {
+    const fieldsString = inputText.substring(withIndex + 4).trim();
+    const fields = fieldsString.split(',');
+    const parsedFields = fields.map(field => {
+      const trimmedField = field.trim();
+      const nameAndType = trimmedField.split(' as ');
+      const name = nameAndType[0].trim();
+      const type = nameAndType[1] ? nameAndType[1].trim() : 'text';
+      return { name, type };
+    });
+    return parsedFields.filter(field => field.name !== '');
+  }
+  return [];
+};
 
+  
+const extractNewField = (parsedInput) => {
+  const inputText = parsedInput.text();
+  const addIndex = inputText.indexOf('add field');
+  if (addIndex !== -1) {
+    const fieldsString = inputText.substring(addIndex + 9).trim();
+    const fields = fieldsString.split('as').map(field => field.trim());
+    const name = fields[0];
+    const type = fields[1] ? fields[1] : 'text';
+    return { name, type };
+  }
+  return null;
+};
 
+  
+  
   const openModal = () => {
     setIsModalOpen(true);
   };
