@@ -17,27 +17,6 @@ const FormCreator = () => {
     setCommand(e.target.value);
   };
 
-  const handleSpeechRecognition = () => {
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.start();
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setCommand(transcript);
-      inputRef.current.focus();
-    };
-
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-    };
-
-    recognition.onend = () => {
-      recognition.stop();
-    };
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -148,9 +127,9 @@ const extractNewField = (parsedInput) => {
           className="input-field"
           ref={inputRef}
         />
-        <button type="button" onClick={handleSpeechRecognition} className="mic-button">
+{/*         <button type="button" onClick={handleSpeechRecognition} className="mic-button">
           <img src="src/assets/mic.png" alt="microphone" />
-        </button>
+        </button> */}
         <button type="submit" className="send-button">Send</button>
       </form>
       {formCreated && (
