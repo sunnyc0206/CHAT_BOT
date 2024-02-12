@@ -1,4 +1,3 @@
-// FormCreator.js
 import React, { useState, useRef } from 'react';
 import compromise from 'compromise';
 import suggestions from './suggestions';
@@ -11,32 +10,11 @@ const FormCreator = () => {
   const [formCreated, setFormCreated] = useState(false);
   const [command, setCommand] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showCreateFormButton, setShowCreateFormButton] = useState(false);
   const inputRef = useRef(null);
 
   const handleInputChange = (e) => {
     setCommand(e.target.value);
-  };
-
-  const handleSpeechRecognition = () => {
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.start();
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setCommand(transcript);
-      inputRef.current.focus();
-    };
-
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-    };
-
-    recognition.onend = () => {
-      recognition.stop();
-    };
   };
 
   const handleSubmit = (e) => {
@@ -52,31 +30,26 @@ const FormCreator = () => {
       const fields = extractFields(parsedInput);
       setFormFields(fields);
       setFormCreated(true);
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: suggestions.createForm },
-      ]);
+      const botResponse = suggestions.createForm[Math.floor(Math.random() * suggestions.createForm.length)];
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
+      setShowCreateFormButton(false); // Hide the "Create Form" button after clicking
     } else if (intent === 'addField') {
       const newField = extractNewField(parsedInput);
       setFormFields((prevFields) => [...prevFields, newField]);
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: `Field added successfully.` },
-      ]);
+      const botResponse = suggestions.addField[Math.floor(Math.random() * suggestions.addField.length)];
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
     } else if (intent === 'greeting') {
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: suggestions.greeting },
-      ]);
+      const botResponse = suggestions.greeting[Math.floor(Math.random() * suggestions.greeting.length)];
+      setShowCreateFormButton(true);
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
     } else {
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: suggestions.unknown },
-      ]);
+      const botResponse = suggestions.unknown[Math.floor(Math.random() * suggestions.unknown.length)];
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
+      setShowCreateFormButton(true);
     }
     setCommand('');
   };
-  
+
   const determineIntent = (parsedInput) => {
     if (parsedInput.match('(create|make|generate) form with').found || parsedInput.match('(create|make|generate) a form with').found) {
       return 'createForm';
@@ -89,39 +62,48 @@ const FormCreator = () => {
   };
 
   const extractFields = (parsedInput) => {
-  const inputText = parsedInput.text();
-  const withIndex = inputText.indexOf('with');
-  if (withIndex !== -1) {
-    const fieldsString = inputText.substring(withIndex + 4).trim();
-    const fields = fieldsString.split(',');
-    const parsedFields = fields.map(field => {
-      const trimmedField = field.trim();
-      const nameAndType = trimmedField.split(' as ');
-      const name = nameAndType[0].trim();
-      const type = nameAndType[1] ? nameAndType[1].trim() : 'text';
+    const inputText = parsedInput.text();
+    const withIndex = inputText.indexOf('with');
+    if (withIndex !== -1) {
+      const fieldsString = inputText.substring(withIndex + 4).trim();
+      const fields = fieldsString.split(',');
+      const parsedFields = fields.map(field => {
+        const trimmedField = field.trim();
+        const nameAndType = trimmedField.split(' as ');
+        const name = nameAndType[0].trim();
+        const type = nameAndType[1] ? nameAndType[1].trim() : 'text';
+        return { name, type };
+      });
+      return parsedFields.filter(field => field.name !== '');
+    }
+    return [];
+  };
+
+  const extractNewField = (parsedInput) => {
+    const inputText = parsedInput.text();
+    const addIndex = inputText.indexOf('add field');
+    if (addIndex !== -1) {
+      const fieldsString = inputText.substring(addIndex + 9).trim();
+      const fields = fieldsString.split('as').map(field => field.trim());
+      const name = fields[0];
+      const type = fields[1] ? fields[1] : 'text';
       return { name, type };
-    });
-    return parsedFields.filter(field => field.name !== '');
-  }
-  return [];
-};
+    }
+    return null;
+  };
 
+  const handleSuggestionClick = (suggestion) => {
+    setCommand(suggestion);
+    inputRef.current.value = ''; 
+    inputRef.current.focus();
+    const userResponse = "Create form";
+    const botResponse = "Ok great, you want to create a form. Let's get you started.";
+    setShowCreateFormButton(false);
+    setChatMessages((prevMessages) => [...prevMessages, { user: true, message: userResponse}]);
+    setChatMessages(prevMessages => [...prevMessages, { user: false, message: botResponse }]);
   
-const extractNewField = (parsedInput) => {
-  const inputText = parsedInput.text();
-  const addIndex = inputText.indexOf('add field');
-  if (addIndex !== -1) {
-    const fieldsString = inputText.substring(addIndex + 9).trim();
-    const fields = fieldsString.split('as').map(field => field.trim());
-    const name = fields[0];
-    const type = fields[1] ? fields[1] : 'text';
-    return { name, type };
-  }
-  return null;
-};
+  };
 
-  
-  
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -138,19 +120,25 @@ const extractNewField = (parsedInput) => {
             <p>{message.message}</p>
           </div>
         ))}
+
+        <div className="suggestions">
+          {showCreateFormButton && (
+            <span className="suggestion create-form" onClick={() => handleSuggestionClick("create form with field1 as type, field2 as type, etc..")}>
+              Create Form
+            </span>
+          )}
+          
+        </div>
       </div>
       <form className='botform' onSubmit={handleSubmit}>
         <input
           type="text"
           value={command}
           onChange={handleInputChange}
-          placeholder="Type 'create form with field1, field2, etc.'"
+          placeholder="Type your message here..."
           className="input-field"
           ref={inputRef}
         />
-        <button type="button" onClick={handleSpeechRecognition} className="mic-button">
-          <img src="src/assets/mic.png" alt="microphone" />
-        </button>
         <button type="submit" className="send-button">Send</button>
       </form>
       {formCreated && (

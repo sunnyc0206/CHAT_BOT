@@ -135,3 +135,16 @@
   flex-direction: row-reverse;
   justify-content: space-between;
 }
+
+.create-form {
+  background-color: #9a98f2; 
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.create-form:hover {
+  background-color: #2b36d1; 
+}
