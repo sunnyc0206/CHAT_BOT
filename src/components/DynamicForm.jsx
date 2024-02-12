@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const DynamicForm = ({ formFields, closeModal }) => {
+const DynamicForm = ({ formFields, closeModal, updateFormFields }) => {
   const [fields, setFields] = useState(formFields);
+
+  useEffect(() => {
+    updateFormFields(fields);
+  }, [fields, updateFormFields]);
 
   const addField = () => {
     const newField = prompt('Enter the name and type of the new field (e.g., "fieldName [as type]"):');
