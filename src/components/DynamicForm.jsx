@@ -1,4 +1,3 @@
-// DynamicForm.js
 import React, { useState } from 'react';
 
 const DynamicForm = ({ formFields, closeModal }) => {
@@ -20,7 +19,6 @@ const DynamicForm = ({ formFields, closeModal }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
   };
 
   return (
