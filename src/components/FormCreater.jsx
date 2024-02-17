@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import compromise from "compromise";
 import suggestions from "./suggestions";
 import "./form.css";
@@ -9,13 +9,18 @@ const FormCreator = () => {
   const [formFields, setFormFields] = useState([]);
   const [formCreated, setFormCreated] = useState(false);
   const [command, setCommand] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCreateFormButton, setShowCreateFormButton] = useState(false);
   const inputRef = useRef(null);
 
-  const updateFormFields = (updatedFields) => {
+  const updateFormFields = useCallback((updatedFields) => {
     setFormFields(updatedFields);
-  };
+    console.log(updatedFields); // Log the updatedFields directly
+  }, []);
+
+  useEffect(() => {
+    const chatArea = document.querySelector(".chat-area");
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }, [chatMessages]);
 
   const handleInputChange = (e) => {
     setCommand(e.target.value);
@@ -32,8 +37,10 @@ const FormCreator = () => {
 
     if (intent === "createForm") {
       const fields = extractFields(parsedInput);
+      console.log(fields);
       setFormFields(fields);
       setFormCreated(true);
+      console.log(formFields);
       const botResponse =
         suggestions.createForm[
           Math.floor(Math.random() * suggestions.createForm.length)
@@ -42,7 +49,8 @@ const FormCreator = () => {
         ...prevMessages,
         { user: false, message: botResponse },
       ]);
-      setShowCreateFormButton(false); // Hide the "Create Form" button after clicking
+      setShowCreateFormButton(false);
+      // Hide the "Create Form" button after clicking
     } else if (intent === "addField") {
       const newField = extractNewField(parsedInput);
       setFormFields((prevFields) => [...prevFields, newField]);
@@ -54,16 +62,19 @@ const FormCreator = () => {
         ...prevMessages,
         { user: false, message: botResponse },
       ]);
+      
     } else if (intent === "greeting") {
       const botResponse =
         suggestions.greeting[
           Math.floor(Math.random() * suggestions.greeting.length)
         ];
       setShowCreateFormButton(true);
+      
       setChatMessages((prevMessages) => [
         ...prevMessages,
         { user: false, message: botResponse },
       ]);
+      //scrollToBottom();
     } else {
       const botResponse =
         suggestions.unknown[
@@ -74,9 +85,16 @@ const FormCreator = () => {
         { user: false, message: botResponse },
       ]);
       setShowCreateFormButton(true);
+      
     }
     setCommand("");
   };
+
+  // const scrollToBottom = () => {
+    
+  //   const chatArea = document.querySelector(".chat-area");
+  //   chatArea.scrollTop = chatArea.scrollHeight;
+  // };
 
   const determineIntent = (parsedInput) => {
     if (
@@ -141,69 +159,67 @@ const FormCreator = () => {
     ]);
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+  // const openModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  // };
 
   return (
-    <div className="form-creator-container">
-      <div className="chat-area">
-        {chatMessages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${message.user ? "user" : "bot"}`}
-          >
-            <p>{message.message}</p>
-          </div>
-        ))}
+    <>
+      <div className="parent">
+        <div className="form-creator-container">
+          <div className="chat-area">
+            {chatMessages.map((message, index) => (
+              <div
+                key={index}
+                className={`message ${message.user ? "user" : "bot"}`}
+              >
+                <p>{message.message}</p>
+              </div>
+            ))}
 
-        <div className="suggestions">
-          {showCreateFormButton && (
-            <span
-              className="suggestion create-form"
-              onClick={() =>
-                handleSuggestionClick(
-                  "create form with field1 as type, field2 as type, etc.."
-                )
-              }
-            >
-              Create Form
-            </span>
-          )}
+            <div className="suggestions">
+              {showCreateFormButton && (
+                <span
+                  className="suggestion create-form"
+                  onClick={() =>
+                    handleSuggestionClick(
+                      "create form with field1 as type, field2 as type, etc.."
+                    )
+                  }
+                >
+                  Create Form
+                </span>
+              )}
+            </div>
+          </div>
+          <form className="botform" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={command}
+              onChange={handleInputChange}
+              placeholder="Type your message here..."
+              className="input-field"
+              ref={inputRef}
+            />
+            <button type="submit" className="send-button">
+              Send
+            </button>
+          </form>
+        </div>
+
+        <div className="dynamic-form-container">
+          <DynamicForm
+            formFields={formFields}
+            // closeModal={closeModal}
+            updateFormFields={updateFormFields}
+          />
         </div>
       </div>
-      <form className="botform" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={command}
-          onChange={handleInputChange}
-          placeholder="Type your message here..."
-          className="input-field"
-          ref={inputRef}
-        />
-        <button type="submit" className="send-button">
-          Send
-        </button>
-      </form>
-      {formCreated && (
-        <div>
-          <button onClick={openModal} className="open-modal-button">
-            Open Form
-          </button>
-          {isModalOpen && (
-            <DynamicForm
-              formFields={formFields}
-              closeModal={closeModal}
-              updateFormFields={updateFormFields}
-            />
-          )}
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

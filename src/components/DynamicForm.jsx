@@ -4,6 +4,10 @@ const DynamicForm = ({ formFields, closeModal, updateFormFields }) => {
   const [fields, setFields] = useState(formFields);
 
   useEffect(() => {
+    setFields(formFields);
+  }, [formFields]);
+
+  useEffect(() => {
     updateFormFields(fields);
   }, [fields, updateFormFields]);
 
@@ -26,31 +30,29 @@ const DynamicForm = ({ formFields, closeModal, updateFormFields }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="form-preview">
-          <div className='top'>
-            <button onClick={closeModal} className="close-modal-button">X</button>
-            <h2>Dynamic Form</h2>
-          </div>
-          <form onSubmit={handleSubmit}>
-            {fields.map((field, index) => (
-              <div key={index}>
-                <label htmlFor={field.name}>{field.name}</label>
-                {field.type === 'int' ? (
-                  <input type="number" id={field.name} name={field.name} />
-                ) : field.type === 'date' ? (
-                  <input type="date" id={field.name} name={field.name} />
-                ) : (
-                  <input type="text" id={field.name} name={field.name} />
-                )}
-                <button type="button" onClick={() => removeField(index)}>X</button>
-              </div>
-            ))}
-            <button type="submit" className="submit-button">Submit</button>
-          </form>
-          <button onClick={addField} className="add-field-button">Add Field</button>
+    <div className="dynamic-form-container">
+      <div className="form-preview">
+        <div className='top'>
+          <button onClick={addField} className="close-modal-button">ADD</button>
+          <h2>Dynamic Form</h2>
         </div>
+        <form onSubmit={handleSubmit}>
+          {fields.map((field, index) => (
+            <div key={index}>
+              <label htmlFor={field.name}>{field.name}</label>
+              {field.type === 'int' ? (
+                <input type="number" id={field.name} name={field.name} />
+              ) : field.type === 'date' ? (
+                <input type="date" id={field.name} name={field.name} />
+              ) : (
+                <input type="text" id={field.name} name={field.name} />
+              )}
+              <button type="button" onClick={() => removeField(index)}>X</button>
+            </div>
+          ))}
+          <button type="submit" className="submit-button">Submit</button>
+        </form>
+        {/* <button onClick={addField} className="add-field-button">Add Field</button> */}
       </div>
     </div>
   );
