@@ -7,7 +7,9 @@ import DynamicForm from "./DynamicForm";
 const FormCreator = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [formFields, setFormFields] = useState([]);
+  const [formName, setFormName] = useState('');
   const [formCreated, setFormCreated] = useState(false);
+  const [askForFormName, setAskForFormName] = useState(false);
   const [command, setCommand] = useState("");
   const [showCreateFormButton, setShowCreateFormButton] = useState(false);
   const inputRef = useRef(null);
@@ -35,61 +37,43 @@ const FormCreator = () => {
     const parsedInput = compromise(userMessage);
     const intent = determineIntent(parsedInput);
 
-    if (intent === "createForm") {
+    if (intent === 'createForm') {
       const fields = extractFields(parsedInput);
-      console.log(fields);
       setFormFields(fields);
-      setFormCreated(true);
-      console.log(formFields);
-      const botResponse =
-        suggestions.createForm[
-          Math.floor(Math.random() * suggestions.createForm.length)
-        ];
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: botResponse },
-      ]);
+      setAskForFormName(true); // Prompt for form name
       setShowCreateFormButton(false);
-      // Hide the "Create Form" button after clicking
-    } else if (intent === "addField") {
+      setCommand('');
+      const botResponse = "Great! Please provide a name for your form.";
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
+    } else if (askForFormName) {
+      setFormName(userMessage); // Set form name
+      setAskForFormName(false);
+      setCommand('');
+      const botResponse = `Form "${userMessage}" Created .`;
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
+    } else if (intent === 'addField') {
       const newField = extractNewField(parsedInput);
-      setFormFields((prevFields) => [...prevFields, newField]);
-      const botResponse =
-        suggestions.addField[
-          Math.floor(Math.random() * suggestions.addField.length)
-        ];
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: botResponse },
-      ]);
-      
-    } else if (intent === "greeting") {
-      const botResponse =
-        suggestions.greeting[
-          Math.floor(Math.random() * suggestions.greeting.length)
-        ];
+      // Check if formName is set before adding fields
+      if (formName && !askForFormName) {
+        setFormFields((prevFields) => [...prevFields, newField]);
+      } else {
+        // Provide feedback to the user to set the form name first
+        const botResponse = "Please set the form name before adding fields.";
+        setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
+      }
+      const botResponse = suggestions.addField[Math.floor(Math.random() * suggestions.addField.length)];
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
+    } else if (intent === 'greeting') {
+      const botResponse = suggestions.greeting[Math.floor(Math.random() * suggestions.greeting.length)];
       setShowCreateFormButton(true);
-      
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: botResponse },
-      ]);
-      //scrollToBottom();
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
     } else {
-      const botResponse =
-        suggestions.unknown[
-          Math.floor(Math.random() * suggestions.unknown.length)
-        ];
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { user: false, message: botResponse },
-      ]);
+      const botResponse = suggestions.unknown[Math.floor(Math.random() * suggestions.unknown.length)];
+      setChatMessages((prevMessages) => [...prevMessages, { user: false, message: botResponse }]);
       setShowCreateFormButton(true);
-      
     }
-    setCommand("");
+    setCommand('');
   };
-
   // const scrollToBottom = () => {
     
   //   const chatArea = document.querySelector(".chat-area");
@@ -214,6 +198,7 @@ const FormCreator = () => {
         <div className="dynamic-form-container">
           <DynamicForm
             formFields={formFields}
+            formName = {formName}
             // closeModal={closeModal}
             updateFormFields={updateFormFields}
           />

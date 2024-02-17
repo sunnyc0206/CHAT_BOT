@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-const DynamicForm = ({ formFields, closeModal, updateFormFields }) => {
+const DynamicForm = ({ formFields, formName, updateFormFields }) => {
   const [fields, setFields] = useState(formFields);
+  const [Name, setName] = useState(formName);
 
   useEffect(() => {
     setFields(formFields);
-  }, [formFields]);
+    setName(formName);
+  }, [formFields,formName]);
 
   useEffect(() => {
     updateFormFields(fields);
@@ -34,7 +36,7 @@ const DynamicForm = ({ formFields, closeModal, updateFormFields }) => {
       <div className="form-preview">
         <div className='top'>
           <button onClick={addField} className="close-modal-button">ADD</button>
-          <h2>Dynamic Form</h2>
+          <h2>{Name? Name:"Dynamic Form"}</h2>
         </div>
         <form onSubmit={handleSubmit}>
           {fields.map((field, index) => (

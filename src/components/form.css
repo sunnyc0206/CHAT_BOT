@@ -42,18 +42,19 @@
   margin-left: 50px;
   color: #fff;
   text-align: right;
-  background-color: #007bff;
+  background-color:#319945;
   border-top-right-radius: 0;
 }
 
 .message.bot p {
   margin-right: 50px;
-  background-color: #3ecf3b;
+  background-color: #303530;
   text-align: left;
   border-top-left-radius: 0;
 }
 
 .input-field {
+  height: min-content;
   width: calc(100% - 60px); /* Adjust for the mic and send button */
   padding: 10px;
   border: 1px solid #ccc;
@@ -108,7 +109,7 @@
 
 .submit-button {
   width: 100%;
-  background-color: #007bff;
+  background-color: #319945;
   color: #fff;
   border: none;
   border-radius: 8px;
