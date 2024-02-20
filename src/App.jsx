@@ -7,7 +7,7 @@ const App = () => {
   return (
     <div className='bot_form'>
       <h1>CIGNA-BOT</h1>
-      <p>Type "hi" or "hello" to chat</p>
+      {/* <p>Type "hi" or "hello" to chat</p> */}
       <FormCreator />
     </div>
   );

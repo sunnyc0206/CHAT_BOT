@@ -5,7 +5,7 @@ import "./form.css";
 import DynamicForm from "./DynamicForm";
 
 const FormCreator = () => {
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState([{user: false, message: `Type "Hi" or "Hello" to chat..`}]);
   const [formFields, setFormFields] = useState([]);
   const [formName, setFormName] = useState('');
   const [formCreated, setFormCreated] = useState(false);
