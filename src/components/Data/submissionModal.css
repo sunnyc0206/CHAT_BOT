@@ -1,0 +1,54 @@
+/* submissionModal.css */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .close-modal-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .submission-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .submission-table th, .submission-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .submission-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .submission-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .submission-table tr:hover {
+    background-color: #ddd;
+  }
+  
