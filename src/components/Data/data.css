@@ -1,0 +1,12 @@
+.formlist{
+    color: tomato;
+}
+
+.formlist {
+    padding: 0px 80px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    overflow:none;
+    justify-content: center;
+  }

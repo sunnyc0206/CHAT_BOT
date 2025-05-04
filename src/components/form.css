@@ -16,7 +16,7 @@
 }
 
 .chat-area {
-  font-size:15px;
+  font-size: 15px;
   height: 300px;
   overflow-y: auto;
   margin-bottom: 20px;
@@ -42,7 +42,7 @@
   margin-left: 50px;
   color: #fff;
   text-align: right;
-  background-color:#319945;
+  background-color: #319945;
   border-top-right-radius: 0;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .input-field {
-  height: min-content;
+  /* height: min-content; */
   width: calc(100% - 60px); /* Adjust for the mic and send button */
   padding: 10px;
   border: 1px solid #ccc;
@@ -102,7 +102,31 @@
   margin-bottom: 5px;
 }
 
-.form-preview input {
+.form-preview .Input_field {
+  width: calc(100% - 100px);
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.form-preview select {
+  width: calc(100% - 100px);
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.radio_options {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: left;
+}
+
+.opt {
+  display: flex;
+  justify-content: space-around;
+}
+
+.opt_parent {
   width: calc(100% - 100px);
   padding: 8px;
   margin-bottom: 10px;
