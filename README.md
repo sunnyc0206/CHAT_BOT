@@ -9,7 +9,8 @@ This project was designed to demonstrate how NLP can be used to enhance UX by tu
 ### Example Use Case
 
 - **User**: "> "Create a form with name as text, age as number, and date of birth as date""
-- **Response: ** "> "![image](https://github.com/user-attachments/assets/02ae5215-27be-408e-849c-7b0b79defc3f)
+- **Response: ** "> " ![image](https://github.com/user-attachments/assets/676b199f-90ae-4376-a66b-26c045f90e96)
+
 
 ## Key Features
 
